@@ -8,10 +8,10 @@ For example on Debian based distributions
 ```
 
 ## Build and run
-In example directory e.g. blink run `make` and `make flash`
+In example directory e.g. blink run `make` and `make flash`, e.g.
 ```
 	cd blink
 	make
-	make flash
+	make flash PORT=/dev/ttyACM0
 ```
-You may need to spicify port in Makefile manually (default `/dev/ttyUSB0`)
+You may need to spicify port with `PORT` argument (default `/dev/ttyUSB0`)

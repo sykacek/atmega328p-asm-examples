@@ -23,5 +23,5 @@ flash: $(APP).hex
 	avrdude -v -p atmega328p -c arduino -P $(PORT) -b 115200 -U flash:w:app.hex:i
 
 clean:
-	rm *.o *.s *.elf *.hex
+	rm *.o *.elf *.hex
 

@@ -8,9 +8,20 @@ ENTRY(main)
 SECTIONS
 {
     .text : {
-        *(.init)
-        *(.fini)
-        . = ALIGN(4);
+        *(.text*)
+		*(.rodata*)
     } > FLASH
+
+	.data : {
+		*(.bss*)
+		*(.data*)
+	} > FLASH 
+
+	/DISCARD/ : {
+		/*(.comment .comment.*)
+		*(.symtab)
+		*(.strtab .shstrtab)*/
+		*(.*)
+	}
 }
 

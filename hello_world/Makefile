@@ -4,7 +4,7 @@ CC			:=	gcc
 LD			:=	ld
 OBJCOPY		:=	objcopy
 CFLAGS		:=	-Wall -O1 -mmcu=atmega328p -ffunction-sections -fdata-sections -nostdlib
-LDFLAGS		:=
+LDFLAGS		:=	
 LDSCRIPT	:=	memmap.ld
 
 APP			:=	app
@@ -15,7 +15,7 @@ all: $(APP).hex
 
 $(APP).hex:
 	$(PREFIX)$(CC) -c $(CFLAGS) main.S
-	$(PREFIX)$(LD) --script=$(LDSCRIPT) -o $(APP).elf main.o
+	$(PREFIX)$(LD) $(LDFLAGS) --script=$(LDSCRIPT) -o $(APP).elf main.o
 	$(PREFIX)$(OBJCOPY) -O ihex $(APP).elf $(APP).hex
 .PHONY: $(APP).hex
 
@@ -25,3 +25,5 @@ flash: $(APP).hex
 clean:
 	rm *.o *.s *.elf *.hex
 
+monitor: flash
+	minicom -D $(PORT) -b 9600

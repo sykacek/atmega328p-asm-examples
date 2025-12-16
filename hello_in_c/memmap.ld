@@ -7,15 +7,19 @@ ENTRY(main)
 
 SECTIONS
 {
-    .text : {
-        *(.text*)
-		. = ALIGN(2);
-    } > FLASH
-
-	.rodata (READONLY) : {
+	.rodata : {
 		*(.rodata*)
 		. = ALIGN(16);
 	} > FLASH
+
+    .text : {
+        *(.text*)
+		. = ALIGN(16);
+    } > FLASH
+
+	.data : {
+		*(.data*)
+	} > FLASH 
 
 	.bss : {
 		*(.bss*)

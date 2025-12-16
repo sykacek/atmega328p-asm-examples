@@ -4,24 +4,39 @@
 
 #define R22_VAL		lo8(0x20)
 
-	.file	"main.c"
+	.file	"main.S"
 __SP_H__ = 0x3e
 __SP_L__ = 0x3d
 __X_L__	= 0x20
 __SREG__ = 0x3f
 __tmp_reg__ = 0
 __zero_reg__ = 1
-	.text
+
+	.section	.rodata,"a",@progbits
+	.align 2
+.const:
+	.string "Hello world"
+
+	#.text
 	.section	.text.main,"ax",@progbits
 .global	main
 	.type	main, @function
 main:
 .L__stack_usage = 0
-	#r28 Yl - counter
+	# r28, r29 STACK
 	#r27 Xh
 	#r26 Xl - counter
 	#r24 generic value
 	#r23 value to compare with
+
+	# create a stack
+	push r28
+	push r29
+	in r28, __SP_L__
+	in r29, __SP_H__
+	sbiw r28, 0x10
+
+	# timers
 	ldi r23, lo8(0xff)
 	ldi r22, R22_VAL
 
@@ -38,22 +53,16 @@ main:
 	sts 0xc4, r16
 	sts 0xc5, r17
 
-	# UCSr - USART 8 data 1 stopC
+	# UCSrC - USART 8 data 1 stop bit
 	ldi r16, 0x06 
 	sts 0xc2, r16
 
-	# UCSr - only TX enableB
-	ldi r16, 0x40 
+	# UCSrB - only TX enable
+	ldi r16, 0x08 
 	sts 0xc1, r16
 
 	# UCSrA are mostly flags
 .loop:
-	# write to uart
-	#lds r16, 0xc0
-	#sbis r16, 5
-	#rjmp .loop
-	# TODO implement locking
-
 	# led toggle
 	in r20, 0x05
 	ldi r19, 0x20
@@ -63,18 +72,23 @@ main:
 
 .led_on:
 	ldi r24, lo8(0x20)
-	out 0x05, r24
+	sts 0x25, r24
 	rjmp .continue
 
 .led_off:
 	ldi r24, lo8(0x0)
-	out 0x05, r24
+	sts 0x25, r24	
 	rjmp .continue
 
 .continue:
-	# send 'a'
-	ldi r16, 0x61
-	sts 0xc6, r16	
+	#lds r16, 0xc0
+	#sbis r16, 5
+	#rjmp .loop
+	# TODO implement locking
+
+	# write to uart
+	ldi r25, 0x61
+	sts 0xc6, r25
 
 	# delay
 	ldi r28, 0
@@ -90,13 +104,6 @@ main:
 	brne .for1
 
 	rjmp .loop
-
-# unused function
-.error:
-	# led on
-	ldi r24, lo8(0x20)
-	out 0x05, r24
-	rjmp .error
 
 	.size	main, .-main
 	.ident	"GCC: (GNU) 15.1.0"
